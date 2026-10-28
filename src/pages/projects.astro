@@ -1,11 +1,10 @@
 ---
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import { projects, sectors } from '../data/projects.js';
+import { projects, statuses, placeOf } from '../data/projects.js';
 import { photo } from '../lib/photos.js';
 
-const scopeName = { PHE: 'PHE', ELE: 'Electrical', FPS: 'Fire' };
-const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => p.sector === s).length]));
+const counts = Object.fromEntries(statuses.map((s) => [s, projects.filter((p) => p.status === s).length]));
 ---
 
 <Base
@@ -14,20 +13,18 @@ const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => 
 >
   <section class="pp wrap" aria-labelledby="pp-title">
     <header class="pp-head">
-      <p class="eyebrow">Projects — {projects.length}</p>
-      <h1 id="pp-title" class="pp-title display" data-reveal-heading>Every building we have helped run.</h1>
+      <h1 id="pp-title" class="pp-title display" data-reveal-heading>Our projects</h1>
       <p class="pp-lede" data-reveal-up>
-        A running index of the projects we have designed services for. Filter by sector to see the work closest to
-        yours.
+        Hotels and homes we have designed plumbing, power and fire services for, finished and in progress.
       </p>
     </header>
 
-    <div class="pp-filters" role="group" aria-label="Filter by sector" data-filters>
+    <div class="pp-filters" role="group" aria-label="Filter by status" data-filters>
       <button type="button" class="pp-chip" aria-pressed="true" data-filter="all">
         All <span class="mono">{projects.length}</span>
       </button>
       {
-        sectors.map((s) => (
+        statuses.map((s) => (
           <button type="button" class="pp-chip" aria-pressed="false" data-filter={s}>
             {s} <span class="mono">{counts[s]}</span>
           </button>
@@ -39,7 +36,7 @@ const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => 
     <ul class="pp-grid" data-grid>
       {
         projects.map((p, i) => (
-          <li class="pp-card" data-sector={p.sector}>
+          <li class="pp-card" data-status={p.status}>
             <figure class="pp-photo">
               <Image quality={72}
                 src={photo(p.photo)}
@@ -49,16 +46,11 @@ const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => 
                 loading={i < 3 ? 'eager' : 'lazy'}
                 decoding="async"
               />
-              <span class="pp-corner tl" />
-              <span class="pp-corner br" />
             </figure>
             <div class="pp-meta">
-              <p class="mono pp-idx">{String(i + 1).padStart(2, '0')}</p>
               <h2 class="pp-name">{p.name}</h2>
-              <p class="pp-sub">
-                {p.sector} · {p.city} · {p.year}
-              </p>
-              <p class="mono pp-scope">{p.scope.map((s) => scopeName[s]).join(' / ')}</p>
+              <p class="pp-sub">{placeOf(p)}</p>
+              <p class="mono pp-status" data-status={p.status}>{p.status}</p>
             </div>
           </li>
         ))
@@ -107,26 +99,27 @@ const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => 
     min-height: 40px;
     padding: 0 16px;
     border-radius: 999px;
-    background: rgb(5 4 13 / 0.75);
-    backdrop-filter: blur(8px);
-    box-shadow: inset 0 0 0 1px var(--line-strong);
+    background: var(--ink-2);
     font-size: var(--t-sm);
     transition:
-      background 0.3s,
-      color 0.3s,
-      box-shadow 0.3s;
+      background 0.2s ease,
+      color 0.2s ease,
+      transform 0.16s var(--ease-out);
   }
   .pp-chip .mono {
     color: var(--mute);
-    font-size: 10px;
   }
-  .pp-chip:hover {
-    box-shadow: inset 0 0 0 1px var(--bone);
+  @media (hover: hover) and (pointer: fine) {
+    .pp-chip:hover {
+      background: var(--ink-3);
+    }
+  }
+  .pp-chip:active {
+    transform: scale(0.97);
   }
   .pp-chip[aria-pressed='true'] {
     background: var(--amber);
     color: var(--ink);
-    box-shadow: none;
   }
   .pp-chip[aria-pressed='true'] .mono {
     color: var(--ink);
@@ -159,64 +152,32 @@ const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => 
       filter 0.6s;
     filter: saturate(0.85);
   }
-  .pp-corner {
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border: 0 solid var(--cyan);
-    opacity: 0;
-    transition:
-      opacity 0.4s,
-      transform 0.6s var(--ease-out);
-  }
-  .pp-corner.tl {
-    top: 14px;
-    left: 14px;
-    border-width: 1.5px 0 0 1.5px;
-    transform: translate(8px, 8px);
-  }
-  .pp-corner.br {
-    right: 14px;
-    bottom: 14px;
-    border-width: 0 1.5px 1.5px 0;
-    transform: translate(-8px, -8px);
-  }
   @media (hover: hover) {
     .pp-card:hover .pp-photo :global(img) {
       transform: scale(1.08);
       filter: saturate(1.05);
     }
-    .pp-card:hover .pp-corner {
-      opacity: 1;
-      transform: none;
-    }
   }
   .pp-meta {
     display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 14px;
     row-gap: 4px;
-    padding-top: 16px;
-  }
-  .pp-idx {
-    grid-row: span 3;
-    color: var(--amber);
-    padding-top: 0.4em;
+    padding-top: 18px;
   }
   .pp-name {
     font-size: var(--t-lg);
-    font-weight: 600;
-    font-stretch: 85%;
+    font-weight: 700;
     letter-spacing: -0.015em;
   }
   .pp-sub {
     color: var(--mute);
     font-size: var(--t-sm);
   }
-  .pp-scope {
+  .pp-status {
+    margin-top: 6px;
+    color: var(--amber);
+  }
+  .pp-status[data-status='Completed'] {
     color: var(--bone);
-    font-size: 10px;
-    margin-top: 4px;
   }
 
   @media (max-width: 1100px) {
@@ -258,7 +219,7 @@ const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => 
   import { gsap, ScrollTrigger, lenis, reduceMotion, revealHeading, revealUp } from '../scripts/core.js';
 
   document.querySelectorAll<HTMLElement>('[data-reveal-heading]').forEach((el) => revealHeading(el));
-  document.querySelectorAll<HTMLElement>('[data-reveal-up], .eyebrow').forEach((el) => revealUp(el, el));
+  document.querySelectorAll<HTMLElement>('[data-reveal-up]').forEach((el) => revealUp(el, el));
 
   const cards = [...document.querySelectorAll<HTMLElement>('.pp-card')];
   const status = document.querySelector('[data-filter-status]')!;
@@ -277,7 +238,7 @@ const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => 
     chip.addEventListener('click', () => {
       const f = chip.dataset.filter!;
       chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
-      const show = cards.filter((c) => f === 'all' || c.dataset.sector === f);
+      const show = cards.filter((c) => f === 'all' || c.dataset.status === f);
       cards.forEach((c) => (c.hidden = !show.includes(c)));
       status.textContent = `Showing ${show.length} ${f === 'all' ? '' : f.toLowerCase() + ' '}projects`;
       if (!reduceMotion) {

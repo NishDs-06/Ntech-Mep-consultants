@@ -38,8 +38,8 @@ const FOG_STEPS = 8;
 export function cubesSVG() {
   const { w: W, h: H } = CUBE_VIEW;
   const r = rng(23);
-  const COLS = [-20, 16];
-  const ROWS = [-10, 11];
+  const COLS = [-28, 28];
+  const ROWS = [-16, 17];
 
   // Protrusion per cell; mostly flush, some pushed out, a few recessed
   const depth = new Map();
@@ -55,9 +55,10 @@ export function cubesSVG() {
   }
   const E = (i, j) => depth.get(key(i, j)) ?? -1;
 
-  // Camera up and to the right of the wall, looking slightly left and down
-  const P = [6.5, 4.2, 11.5];
-  const T = [1, 0.4, 0];
+  // Camera well back, a little up and to the right, so the cubes read small
+  // and nearly front-on with just a sliver of side showing, like the brochure
+  const P = [6, 3.4, 18];
+  const T = [0.5, 0.2, 0];
   const fw = norm(sub(T, P));
   const ru = norm(cross(fw, [0, 1, 0]));
   const up = cross(ru, fw);

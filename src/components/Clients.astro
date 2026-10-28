@@ -10,8 +10,7 @@ const rows = [clients.slice(0, half), clients.slice(half)];
 
 <section class="cl" id="clients" aria-labelledby="cl-title" data-cl>
   <header class="cl-head wrap">
-    <p class="eyebrow">Clients</p>
-    <h2 id="cl-title" class="cl-title display" data-reveal-heading>Trusted on sites across <em>Karnataka.</em></h2>
+    <h2 id="cl-title" class="cl-title display" data-reveal-heading>Trusted across <em>Karnataka.</em></h2>
     <p class="cl-intro" data-reveal-up>
       Developers, architects and institutions we have designed for: single towers, hospitals, hotels and whole
       campuses.
@@ -28,7 +27,6 @@ const rows = [clients.slice(0, half), clients.slice(half)];
         <div class="cl-row" data-cl-row>
           {[...set, ...set].map((c, i) => (
             <div class:list={['cl-tile', { 'cl-tile--blue': (i + r * 2) % 5 === 3 }]}>
-              <span class="cl-no mono">C/{String(r * half + (i % set.length) + 1).padStart(2, '0')}</span>
               <Icon name={c.icon} class="cl-icon" />
               <span class="cl-name">{c.name}</span>
             </div>
@@ -51,9 +49,6 @@ const rows = [clients.slice(0, half), clients.slice(half)];
     column-gap: 20px;
     row-gap: 22px;
     padding-bottom: clamp(48px, 8vh, 88px);
-  }
-  .cl-head .eyebrow {
-    grid-column: 1 / -1;
   }
   .cl-title {
     grid-column: 1 / span 7;
@@ -119,9 +114,6 @@ const rows = [clients.slice(0, half), clients.slice(half)];
     --top: #6dcdf4;
     --fg: #031421;
     --accent: #031421;
-  }
-  .cl-no {
-    color: color-mix(in srgb, var(--fg) 55%, transparent);
   }
   .cl-tile :global(.cl-icon) {
     align-self: end;

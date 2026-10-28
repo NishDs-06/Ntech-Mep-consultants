@@ -132,6 +132,7 @@ function heroIn(delay = 0) {
   gsap.set(sphere, { scale: 0.6, rotation: -90, opacity: 0, transformOrigin: '50% 50%' });
   gsap.set(word.chars, { yPercent: 45, opacity: 0 });
   gsap.set(tag.chars, { opacity: 0 });
+  gsap.set('[data-hero-flame]', { opacity: 0, x: 60 });
   gsap.set('[data-hero-line]', { y: 14, opacity: 0 });
   gsap.set(lede.lines, { yPercent: 105 });
   gsap.set(acts, { y: 16, opacity: 0 });
@@ -151,6 +152,7 @@ function heroIn(delay = 0) {
     .to(sphere, { scale: 1, rotation: 0, opacity: 1, duration: 1.6 }, 1.2)
     .to(word.chars, { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.05, onComplete: () => word.revert() }, 1.3)
     .to(tag.chars, { opacity: 1, duration: 0.05, stagger: 0.035, ease: 'none' }, 1.7)
+    .to('[data-hero-flame]', { opacity: 1, x: 0, duration: 1.8 }, 1.4)
     .to('[data-hero-line]', { y: 0, opacity: 1, duration: 1, stagger: 0.08 }, 1.5)
     .to(lede.lines, { yPercent: 0, duration: 1.2, stagger: 0.08 }, 1.5)
     .to(acts, { y: 0, opacity: 1, duration: 1, stagger: 0.08 }, 1.7)
@@ -174,6 +176,7 @@ function heroScroll() {
     .fromTo('[data-hero-turn]', { scale: 1.04, xPercent: 0, yPercent: 0 }, { scale: 1.32, xPercent: -7, yPercent: -4, duration: 1 }, 0)
     .to('[data-hero-lockup]', { y: () => -innerHeight * 0.05, scale: 0.92, duration: 0.7 }, 0)
     .to('[data-hero-lockup]', { opacity: 0, duration: 0.2 }, 0.62)
+    .to('[data-hero-flame]', { opacity: 0, duration: 0.3 }, 0.5)
     .to('[data-hero-fade-out]', { opacity: 0.65, duration: 0.3 }, 0.7);
 }
 
@@ -300,7 +303,6 @@ function projectsSeq() {
 
   const stage = $('[data-pj-stage]', section);
   const items = $$('[data-pj-item]', section);
-  const count = $('[data-pj-count]', section);
   const bar = $('[data-pj-bar]', section);
   const n = items.length;
 
@@ -330,8 +332,6 @@ function projectsSeq() {
       invalidateOnRefresh: true,
       onUpdate: (self) => {
         gsap.set(bar, { scaleX: self.progress });
-        const idx = Math.min(n - 1, Math.floor(self.progress * n * 0.999));
-        count.textContent = String(idx + 1).padStart(2, '0');
       },
     },
   });
@@ -342,7 +342,7 @@ function projectsSeq() {
     const img = $('[data-pj-img]', item);
     const info = $('[data-pj-info]', item);
     const name = $('[data-pj-name]', item);
-    const fades = $$('[data-pj-fade], .pj-sector, .pj-num', item);
+    const fades = $$('[data-pj-fade], .pj-sector', item);
     const at = i * STEP;
 
     if (i === 0) {
@@ -371,7 +371,6 @@ function projectsSeq() {
 function reveals() {
   $$('[data-reveal-heading]').forEach((el) => revealHeading(el));
   $$('[data-reveal-up]').forEach((el) => revealUp(el, el));
-  $$('.eyebrow:not([data-hero-fade])').forEach((el) => revealUp(el, el, { y: 12 }));
 }
 
 intro();

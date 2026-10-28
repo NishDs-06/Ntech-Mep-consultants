@@ -8,8 +8,7 @@ const year = new Date().getFullYear();
 <footer class="ft" id="contact" aria-labelledby="ft-title">
   <div class="ft-inner wrap">
     <div class="ft-top">
-      <p class="eyebrow">Contact</p>
-      <h2 id="ft-title" class="ft-title display" data-reveal-heading>Have a building on the <em>drawing board?</em></h2>
+      <h2 id="ft-title" class="ft-title display" data-reveal-heading>Planning a <em>building?</em></h2>
       <p class="ft-lede" data-reveal-up>
         Send us the architectural set — or just a site plan and a brief. We will come back within two working days with
         a scope and fee.
@@ -89,12 +88,6 @@ const year = new Date().getFullYear();
     column-gap: 20px;
     row-gap: 24px;
   }
-  .ft-top .eyebrow {
-    grid-column: 1 / -1;
-  }
-  .ft-top .eyebrow::before {
-    background: var(--ft-blue);
-  }
   .ft-title {
     grid-column: 1 / span 8;
     font-size: var(--t-2xl);
@@ -161,7 +154,7 @@ const year = new Date().getFullYear();
   .ft-sub {
     display: block;
     color: rgb(255 255 255 / 0.45);
-    font-size: 10px;
+    font-size: var(--t-sm);
   }
   .ft-link {
     width: fit-content;

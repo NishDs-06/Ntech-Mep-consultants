@@ -1,8 +1,5 @@
-@import '@fontsource-variable/instrument-sans/wdth.css';
-@import '@fontsource/instrument-serif/400-italic.css';
-@import '@fontsource-variable/martian-mono/wdth.css';
-@import '@fontsource/michroma/400.css';
-@import '@fontsource-variable/big-shoulders-display/index.css';
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource/russo-one/400.css';
 @import 'lenis/dist/lenis.css';
 
 /* ---------------------------------------------------------------
@@ -26,16 +23,12 @@
   --line: rgb(236 235 245 / 0.14);
   --line-strong: rgb(236 235 245 / 0.32);
 
-  /* Condensed grotesk for display, same family at full width for reading,
-     a serif italic for the one accent word, a drafting mono for labels.
-     Michroma is the N-Tech logotype (closest to the brochure's wordmark);
-     Big Shoulders is the heavy tag face beside it. */
-  --f-display: 'Instrument Sans Variable', system-ui, sans-serif;
-  --f-body: 'Instrument Sans Variable', system-ui, sans-serif;
-  --f-serif: 'Instrument Serif', Georgia, serif;
-  --f-mono: 'Martian Mono Variable', ui-monospace, monospace;
-  --f-logo: 'Michroma', system-ui, sans-serif;
-  --f-tag: 'Big Shoulders Display Variable', 'Arial Narrow', sans-serif;
+  /* Two faces for the whole site. Archivo carries every word: expanded and
+     heavy for display, normal width for reading and labels. Russo One is the
+     N-Tech logotype and appears nowhere else. */
+  --f-display: 'Archivo Variable', system-ui, sans-serif;
+  --f-body: 'Archivo Variable', system-ui, sans-serif;
+  --f-logo: 'Russo One', system-ui, sans-serif;
   --poster-blue: #1f6fe6;
 
   --gutter: clamp(16px, 3.2vw, 48px);
@@ -43,13 +36,14 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-  --t-xs: 0.75rem;
+  /* Six steps, nothing else: label, body, lead, title, section heading, display */
   --t-sm: 0.875rem;
   --t-md: 1.0625rem;
-  --t-lg: clamp(1.125rem, 0.6vw + 0.95rem, 1.375rem);
-  --t-xl: clamp(1.5rem, 1.6vw + 1rem, 2.5rem);
-  --t-2xl: clamp(2.25rem, 4vw + 1rem, 5rem);
-  --t-hero: clamp(3rem, 8.4vw, 9.5rem);
+  --t-lg: clamp(1.25rem, 0.8vw + 1rem, 1.625rem);
+  --t-xl: clamp(1.75rem, 2vw + 1rem, 3rem);
+  --t-2xl: clamp(2.5rem, 4.2vw + 1rem, 5.5rem);
+  --t-hero: clamp(3.5rem, 9vw, 10rem);
+  --t-xs: var(--t-sm);
 
   color-scheme: dark;
 }
@@ -158,46 +152,24 @@ ol {
 /* ---------- Type primitives ---------- */
 .display {
   font-family: var(--f-display);
-  font-stretch: 78%;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-stretch: 112%;
+  font-weight: 800;
+  letter-spacing: -0.025em;
   line-height: 0.92;
   text-wrap: balance;
 }
-/* One accent word per heading: serif italic, amber */
+/* The brochure's two-tone: same face and weight, the last words in amber */
 .display em {
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-weight: 400;
-  font-stretch: normal;
-  letter-spacing: -0.01em;
+  font-style: normal;
   color: var(--amber);
 }
 
+/* Small text: same face, sentence case, figures that line up */
 .mono {
-  font-family: var(--f-mono);
-  font-stretch: 87.5%;
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--f-mono);
-  font-stretch: 87.5%;
-  font-size: 0.6875rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--mute);
-}
-.eyebrow::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  background: var(--amber);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
 }
 
 .wrap {

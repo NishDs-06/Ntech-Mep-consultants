@@ -1,25 +1,27 @@
 ---
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
-import { featured, projects } from '../data/projects.js';
+import { completed, ongoing, placeOf } from '../data/projects.js';
 import { photo } from '../lib/photos.js';
-
-const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protection' };
 ---
 
 <section class="pj" id="projects" aria-labelledby="pj-title" data-pj>
   <header class="pj-head wrap">
-    <p class="eyebrow">Selected projects</p>
-    <h2 id="pj-title" class="pj-title display" data-reveal-heading>Buildings that work because <em>the services do.</em></h2>
+    <h2 id="pj-title" class="pj-title display" data-reveal-heading>Projects, built and <em>under way.</em></h2>
+    <p class="pj-intro" data-reveal-up>
+      Three finished, three on the drawing board. Each one drawn as a single coordinated set of plumbing, power and
+      fire services.
+    </p>
   </header>
 
   <div class="pj-stage" data-pj-stage>
     {
-      featured.map((p, i) => (
+      completed.map((p, i) => (
         <article class="pj-item" data-pj-item aria-labelledby={`pj-${p.id}`}>
           <div class="pj-move" data-pj-move>
             <div class="pj-frame" data-pj-frame>
-              <Image quality={72}
+              <Image
+                quality={72}
                 src={photo(p.photo)}
                 alt={p.alt}
                 widths={[800, 1280, 1920]}
@@ -30,18 +32,14 @@ const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protecti
               <div class="pj-shade" />
             </div>
             <p class="pj-tag mono" data-pj-tag>
-              P—0{i + 1} / {p.sector}
+              <span>{p.name}</span>
+              <span>{p.city ?? p.sector}</span>
             </p>
           </div>
 
           <div class="pj-info wrap" data-pj-info>
-            <p class="pj-num display" aria-hidden="true">
-              0{i + 1}
-            </p>
             <div class="pj-main">
-              <p class="mono pj-sector">
-                {p.sector} — {p.city}
-              </p>
+              <p class="mono pj-sector">{placeOf(p)}</p>
               <h3 id={`pj-${p.id}`} class="pj-name display" data-pj-name>
                 {p.name}
               </h3>
@@ -51,17 +49,19 @@ const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protecti
             </div>
             <dl class="pj-meta" data-pj-fade>
               <div>
-                <dt class="mono">Built-up area</dt>
-                <dd>{p.area}</dd>
+                <dt class="mono">Status</dt>
+                <dd>{p.status}</dd>
               </div>
               <div>
-                <dt class="mono">Completed</dt>
-                <dd>{p.year}</dd>
+                <dt class="mono">Type</dt>
+                <dd>{p.sector}</dd>
               </div>
-              <div>
-                <dt class="mono">Our scope</dt>
-                <dd>{p.scope.map((s) => scopeName[s]).join(', ')}</dd>
-              </div>
+              {p.city && (
+                <div>
+                  <dt class="mono">Location</dt>
+                  <dd>{p.city}</dd>
+                </div>
+              )}
             </dl>
           </div>
         </article>
@@ -69,21 +69,31 @@ const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protecti
     }
 
     <div class="pj-hud wrap" aria-hidden="true">
-      <span class="mono"><b data-pj-count>01</b> / 0{featured.length}</span>
+      <span class="mono">Completed</span>
       <span class="pj-bar"><i data-pj-bar></i></span>
       <span class="mono">Scroll</span>
     </div>
   </div>
 
-  <div class="pj-more wrap">
-    <p class="pj-more-copy">
-      <span class="display">{projects.length}+</span>
-      <span>projects across healthcare, hospitality, housing, offices and industry.</span>
-    </p>
-    <a href="/projects" class="btn">
-      View all projects
-      <span class="btn-icon"><Icon name="solar:arrow-right-linear" /></span>
-    </a>
+  <div class="pj-next wrap" aria-labelledby="pj-next-title">
+    <div class="pj-next-head">
+      <h3 id="pj-next-title" class="pj-next-title display" data-reveal-heading>Under way</h3>
+      <p class="pj-next-copy" data-reveal-up>Three residential developments for Land Trades, in design with us now.</p>
+      <a href="/projects" class="btn" data-reveal-up>
+        All projects
+        <span class="btn-icon"><Icon name="solar:arrow-right-linear" /></span>
+      </a>
+    </div>
+    <ul class="pj-next-list">
+      {
+        ongoing.map((p) => (
+          <li data-reveal-up>
+            <span class="pj-next-name display">{p.name}</span>
+            <span class="mono pj-next-place">{placeOf(p)}</span>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </section>
 
@@ -94,13 +104,22 @@ const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protecti
     padding-top: clamp(96px, 14vh, 180px);
   }
   .pj-head {
-    padding-bottom: clamp(40px, 7vh, 80px);
     display: grid;
-    gap: 24px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 24px;
+    align-items: end;
+    padding-bottom: clamp(48px, 8vh, 96px);
   }
   .pj-title {
+    grid-column: 1 / span 8;
     font-size: var(--t-2xl);
-    max-width: 18ch;
+  }
+  .pj-intro {
+    grid-column: 9 / -1;
+    max-width: 38ch;
+    font-size: var(--t-md);
+    text-wrap: pretty;
   }
 
   /* ---------- Default: stacked cards (no-JS / reduced motion) ---------- */
@@ -135,38 +154,36 @@ const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protecti
   }
   .pj-info {
     display: grid;
-    grid-template-columns: auto 1fr minmax(240px, 0.6fr);
+    grid-template-columns: 1fr minmax(240px, 0.45fr);
     gap: 20px clamp(20px, 4vw, 64px);
     align-items: end;
     padding-block: 28px;
-  }
-  .pj-num {
-    font-size: clamp(4rem, 10vw, 11rem);
-    line-height: 0.75;
-    color: transparent;
-    -webkit-text-stroke: 1.5px var(--amber);
   }
   .pj-sector {
     color: var(--amber);
     margin-bottom: 12px;
   }
   .pj-name {
-    font-size: clamp(2.4rem, 5.6vw, 6.4rem);
+    font-size: var(--t-2xl);
   }
   .pj-blurb {
-    margin-top: 18px;
-    max-width: 52ch;
-    color: rgb(236 235 245 / 0.82);
+    margin-top: 20px;
+    max-width: 48ch;
+    font-size: var(--t-md);
+    line-height: 1.5;
+    text-wrap: pretty;
   }
   .pj-meta {
     display: grid;
-    gap: 14px;
+    gap: 18px;
   }
   .pj-meta div {
     display: grid;
-    gap: 4px;
-    padding-top: 10px;
-    border-top: 1px solid var(--line-strong);
+    gap: 2px;
+  }
+  .pj-meta dd {
+    font-size: var(--t-lg);
+    font-weight: 600;
   }
   .pj-meta dt {
     color: var(--mute);
@@ -240,33 +257,74 @@ const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protecti
     transform: scaleX(0);
   }
 
-  .pj-more {
+  /* Ongoing work: the names set large down the right, the heading and the way on at left */
+  .pj-next {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 48px;
+    padding-block: clamp(120px, 18vh, 220px);
+  }
+  .pj-next-head {
+    grid-column: 1 / span 4;
     display: flex;
-    align-items: end;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .pj-next-title {
+    font-size: var(--t-xl);
+    color: var(--amber);
+  }
+  .pj-next-copy {
+    max-width: 30ch;
+    text-wrap: pretty;
+  }
+  .pj-next-list {
+    grid-column: 6 / -1;
+    display: grid;
+    gap: clamp(20px, 3vh, 36px);
+  }
+  .pj-next-list li {
+    display: flex;
+    align-items: baseline;
     justify-content: space-between;
+    gap: 8px 24px;
     flex-wrap: wrap;
-    gap: 28px;
-    padding-block: clamp(64px, 12vh, 140px);
   }
-  .pj-more-copy {
-    display: flex;
-    align-items: end;
-    gap: 20px;
-    max-width: 560px;
+  .pj-next-name {
+    font-size: var(--t-xl);
+    line-height: 1;
+  }
+  .pj-next-place {
     color: var(--mute);
-  }
-  .pj-more-copy .display {
-    font-size: clamp(3.5rem, 7vw, 7rem);
-    color: var(--bone);
-    line-height: 0.8;
   }
 
   @media (max-width: 860px) {
     .pj-info {
       grid-template-columns: 1fr;
     }
-    .pj-num {
-      display: none;
+    .pj-head > *,
+    .pj-next-head,
+    .pj-next-list {
+      grid-column: 1 / -1;
+    }
+    /* On a phone the way on follows the list instead of sitting above it */
+    .pj-next-head {
+      display: contents;
+    }
+    .pj-next {
+      row-gap: 24px;
+    }
+    .pj-next-head > * {
+      grid-column: 1 / -1;
+    }
+    .pj-next-list {
+      margin-block: 16px;
+    }
+    .pj-next-head .btn {
+      order: 1;
+      justify-self: start;
     }
     :global(.is-pinned) .pj-info {
       padding-bottom: 80px;
@@ -277,9 +335,6 @@ const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protecti
     }
     .pj-meta {
       grid-template-columns: 1fr 1fr;
-    }
-    .pj-meta div:last-child {
-      grid-column: 1 / -1;
     }
     :global(.is-pinned) .pj-tag {
       left: 12%;

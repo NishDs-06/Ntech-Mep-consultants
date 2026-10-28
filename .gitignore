@@ -27,3 +27,4 @@ pnpm-debug.log*
 graphify-out/
 *.psd
 *copy.jpg
+.taste-skill/

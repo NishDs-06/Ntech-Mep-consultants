@@ -25,9 +25,7 @@ const last = services.length;
               services.map((s, i) => (
                 <div class="svc-face svc-face--text" style={`--k:${i}`} data-face={i}>
                   <div class="svc-face-top mono">
-                    <span>
-                      0{i + 1} / 0{services.length}
-                    </span>
+                    <span>{s.short}</span>
                     <span>{s.code}</span>
                   </div>
                   <h3 class="svc-face-title display">{s.title}</h3>
@@ -46,7 +44,7 @@ const last = services.length;
                 <span>Next</span>
                 <span>Contact</span>
               </div>
-              <p class="svc-face-title display">Your building, <em>drawn as one.</em></p>
+              <p class="svc-face-title display">Drawn <em>as one.</em></p>
               <p class="svc-face-quote">Send us what you have, a sketch or a full set, and we will come back with a scope.</p>
               <span class="svc-shade" />
             </div>
@@ -69,7 +67,7 @@ const last = services.length;
                   />
                   <span class="svc-face-tag mono">{s.code}</span>
                   <span class="svc-face-cap mono">
-                    Fig. 0{i + 1} — {s.short}
+                    {s.short}
                   </span>
                   <span class="svc-shade" />
                 </div>
@@ -92,7 +90,6 @@ const last = services.length;
         {
           services.map((s, i) => (
             <li data-step={i}>
-              <span>0{i + 1}</span>
               {s.short}
             </li>
           ))
@@ -117,9 +114,7 @@ const last = services.length;
             />
           </figure>
           <div class="svc-item-text">
-            <p class="mono svc-idx">
-              0{i + 1} — {s.code}
-            </p>
+            <p class="mono svc-idx">{s.code}</p>
             <h3 class="display">{s.title}</h3>
             <p class="svc-statement">{s.statement}</p>
             <ul class="svc-scope">
@@ -214,7 +209,6 @@ const last = services.length;
     position: absolute;
     left: 0;
     color: var(--amber);
-    font-family: var(--f-mono);
   }
 
   /* ---------- 3D view ---------- */
@@ -317,9 +311,9 @@ const last = services.length;
   }
   .svc-face-title {
     margin-top: auto;
-    font-size: calc(var(--h) * 0.125);
-    line-height: 0.9;
-    max-width: 9ch;
+    font-size: calc(var(--h) * 0.1);
+    line-height: 0.95;
+    max-width: 12ch;
   }
   .svc-face-title em {
     color: var(--ultra);
@@ -327,8 +321,6 @@ const last = services.length;
   .svc-face-quote {
     margin-top: calc(var(--h) * 0.035);
     max-width: 26ch;
-    font-family: var(--f-serif);
-    font-style: italic;
     font-size: calc(var(--h) * 0.044);
     line-height: 1.18;
     color: rgb(23 21 31 / 0.78);
@@ -339,7 +331,7 @@ const last = services.length;
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 14px;
-    font-size: clamp(8.5px, calc(var(--h) * 0.02), 10px);
+    font-size: clamp(13px, calc(var(--h) * 0.026), 14px);
     line-height: 1.35;
     text-transform: none;
     letter-spacing: 0;
@@ -406,14 +398,8 @@ const last = services.length;
     color: var(--mute);
     transition: color 0.4s var(--ease-out);
   }
-  .svc-steps li span {
-    margin-right: 8px;
-  }
   .svc-steps li.is-active {
     color: var(--bone);
-  }
-  .svc-steps li.is-active span {
-    color: var(--amber);
   }
 
   @media (max-width: 860px) {
@@ -448,7 +434,7 @@ const last = services.length;
       padding: 0 10px 0 14px;
       gap: 8px;
       min-height: 42px;
-      font-size: 12px;
+      font-size: var(--t-sm);
     }
     .svc-steps li:not(.is-active) {
       display: none;

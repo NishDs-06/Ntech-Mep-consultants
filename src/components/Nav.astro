@@ -13,7 +13,6 @@ import { site } from '../data/site.js';
       {
         site.nav.map((l, i) => (
           <a href={l.href} class="nav-link">
-            <span class="nav-idx mono">0{i + 1}</span>
             <span class="nav-label"><span data-text={l.label}>{l.label}</span></span>
           </a>
         ))
@@ -34,7 +33,6 @@ import { site } from '../data/site.js';
       {
         site.nav.map((l, i) => (
           <a href={l.href} class="nav-sheet-link display" data-nav-close>
-            <span class="mono">0{i + 1}</span>
             {l.label}
           </a>
         ))
@@ -92,10 +90,6 @@ import { site } from '../data/site.js';
     font-size: var(--t-sm);
     font-weight: 500;
     padding: 8px 0;
-  }
-  .nav-idx {
-    font-size: 10px;
-    color: var(--mute);
   }
   .nav-label {
     position: relative;
@@ -183,9 +177,6 @@ import { site } from '../data/site.js';
     font-size: clamp(2.5rem, 12vw, 4.5rem);
     padding: 6px 0;
     border-bottom: 1px solid rgb(255 255 255 / 0.18);
-  }
-  .nav-sheet-link .mono {
-    color: var(--amber);
   }
   .nav-sheet-foot {
     margin-top: auto;
