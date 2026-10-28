@@ -1,0 +1,70 @@
+---
+import { DOTS, project } from '../lib/sphere.js';
+
+interface Props {
+  class?: string;
+  wordmark?: boolean;
+  id?: string;
+}
+const { class: className = '', wordmark = true, id } = Astro.props;
+const dots = DOTS.map((d) => ({ ...d, ...project(d) }));
+---
+
+<span class:list={['logo', className]} id={id}>
+  <svg class="logo-sphere" viewBox="0 0 100 100" aria-hidden="true" data-sphere>
+    {
+      dots.map((d) => (
+        <ellipse
+          cx={d.cx.toFixed(2)}
+          cy={d.cy.toFixed(2)}
+          rx={d.rx.toFixed(2)}
+          ry={d.ry.toFixed(2)}
+          transform={`rotate(${d.rot.toFixed(1)} ${d.cx.toFixed(2)} ${d.cy.toFixed(2)})`}
+          opacity={d.o}
+          class={d.warm ? 'warm' : 'cool'}
+        />
+      ))
+    }
+  </svg>
+  {
+    wordmark && (
+      <span class="logo-word">
+        N<span class="logo-dash">-</span>Tech
+      </span>
+    )
+  }
+</span>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.32em;
+    line-height: 1;
+  }
+  .logo-sphere {
+    width: 1.55em;
+    height: 1.55em;
+    flex: none;
+    overflow: visible;
+  }
+  .logo-sphere :global(.warm) {
+    fill: var(--amber);
+  }
+  .logo-sphere :global(.cool) {
+    fill: var(--bone);
+  }
+  /* The word tucks into the open side of the globe, under its top arm */
+  .logo-word {
+    margin-left: -0.98em;
+    font-family: var(--f-logo);
+    font-weight: 400;
+    font-size: 0.82em;
+    letter-spacing: -0.03em;
+    /* Michroma ships one weight; a hairline of its own colour gives it body at small sizes */
+    -webkit-text-stroke: 0.025em currentColor;
+  }
+  .logo-dash {
+    color: var(--amber);
+  }
+</style>

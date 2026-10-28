@@ -1,0 +1,120 @@
+---
+import Logo from './Logo.astro';
+---
+
+<div class="loader" data-loader aria-hidden="true">
+  <div class="loader-grid"></div>
+  <div class="loader-center" data-loader-center>
+    <Logo class="loader-logo" wordmark={false} />
+    <div class="loader-word display" data-loader-word>
+      <span>N</span><span class="dash">-</span><span>T</span><span>e</span><span>c</span><span>h</span>
+    </div>
+    <p class="loader-tag mono" data-loader-tag>MEP Consultants</p>
+  </div>
+  <div class="loader-foot wrap">
+    <span class="mono">PHE <i>/</i> Electrical <i>/</i> Fire</span>
+    <span class="loader-count display" data-loader-count>000</span>
+  </div>
+  <div class="loader-wipe" data-loader-wipe style="background-image: url(/hero/vines.svg)"></div>
+</div>
+
+<style>
+  .loader {
+    display: none;
+  }
+  :global(.js) .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    display: grid;
+    place-items: center;
+    background: var(--ink);
+    animation: loader-failsafe 0.6s 10s forwards;
+  }
+  :global(.js.intro-seen) .loader {
+    display: none;
+  }
+  @keyframes loader-failsafe {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  .loader-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 8vmin 8vmin;
+    background-position: center;
+    mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 60%);
+    opacity: 0.5;
+  }
+  .loader-center {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 2vw, 26px);
+  }
+  .loader-center :global(.loader-logo) {
+    font-size: clamp(80px, 12vw, 172px);
+  }
+  .loader-word {
+    display: flex;
+    font-size: clamp(56px, 11vw, 168px);
+    font-family: var(--f-logo);
+    font-weight: 400;
+    letter-spacing: -0.045em;
+    overflow: clip;
+    padding-bottom: 0.04em;
+  }
+  .loader-word span {
+    display: inline-block;
+  }
+  .loader-word .dash {
+    color: var(--amber);
+  }
+  .loader-tag {
+    position: absolute;
+    left: calc(100% - 0.4em);
+    bottom: -2.4em;
+    transform: translateX(-100%);
+    white-space: nowrap;
+    color: var(--amber);
+    letter-spacing: 0.32em;
+  }
+  .loader-foot {
+    position: absolute;
+    inset: auto 0 max(22px, env(safe-area-inset-bottom));
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    color: var(--mute);
+  }
+  .loader-foot i {
+    font-style: normal;
+    color: var(--amber);
+    padding: 0 0.4em;
+  }
+  .loader-count {
+    font-size: clamp(48px, 8vw, 120px);
+    color: var(--bone);
+    font-variant-numeric: tabular-nums;
+    line-height: 0.8;
+  }
+  /* Wipes in the hero's own dark-blue vine field, so the hand-off is seamless */
+  .loader-wipe {
+    position: absolute;
+    inset: 0;
+    background: #0e0880 50% 50% / cover no-repeat;
+    clip-path: inset(100% 0 0 0);
+  }
+  /* the hero's scanlines, so the wipe and the closed hero are the same picture */
+  .loader-wipe::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(to bottom, rgb(2 1 30 / 0.3) 0 1px, transparent 1px 3px);
+  }
+</style>

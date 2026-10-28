@@ -1,0 +1,457 @@
+---
+import { Image } from 'astro:assets';
+import { services } from '../data/services.js';
+import { photo } from '../lib/photos.js';
+import { site } from '../data/site.js';
+import Icon from './Icon.astro';
+
+// Four faces round the horizontal axis: one per service, then a sign-off.
+// Left prism carries the copy, right prism the photos; the last pair is the way in.
+const last = services.length;
+---
+
+<section class="svc" id="services" aria-labelledby="svc-title" data-svc>
+  <div class="svc-track" data-svc-track>
+    <div class="svc-stage" data-svc-stage>
+      <h2 id="svc-title" class="svc-title display" data-svc-title>
+        Services
+      </h2>
+
+      <!-- Enhanced view: two prisms slide in, lock together and turn. Mirrors the list below. -->
+      <div class="svc-cube" aria-hidden="true">
+        <div class="svc-half svc-half--l" data-half>
+          <div class="svc-prism" data-prism="l">
+            {
+              services.map((s, i) => (
+                <div class="svc-face svc-face--text" style={`--k:${i}`} data-face={i}>
+                  <div class="svc-face-top mono">
+                    <span>
+                      0{i + 1} / 0{services.length}
+                    </span>
+                    <span>{s.code}</span>
+                  </div>
+                  <h3 class="svc-face-title display">{s.title}</h3>
+                  <p class="svc-face-quote">{s.statement}</p>
+                  <ul class="svc-face-scope mono">
+                    {s.scope.map((x) => (
+                      <li>{x}</li>
+                    ))}
+                  </ul>
+                  <span class="svc-shade" />
+                </div>
+              ))
+            }
+            <div class="svc-face svc-face--text" style={`--k:${last}`} data-face={last}>
+              <div class="svc-face-top mono">
+                <span>Next</span>
+                <span>Contact</span>
+              </div>
+              <p class="svc-face-title display">Your building, <em>drawn as one.</em></p>
+              <p class="svc-face-quote">Send us what you have, a sketch or a full set, and we will come back with a scope.</p>
+              <span class="svc-shade" />
+            </div>
+          </div>
+        </div>
+
+        <div class="svc-half svc-half--r" data-half>
+          <div class="svc-prism" data-prism="r">
+            {
+              services.map((s, i) => (
+                <div class="svc-face svc-face--photo" style={`--k:${i}`} data-face={i}>
+                  <Image
+                    quality={72}
+                    src={photo(s.photo)}
+                    alt=""
+                    widths={[480, 720, 960]}
+                    sizes="(max-width: 760px) 46vw, 30vw"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span class="svc-face-tag mono">{s.code}</span>
+                  <span class="svc-face-cap mono">
+                    Fig. 0{i + 1} — {s.short}
+                  </span>
+                  <span class="svc-shade" />
+                </div>
+              ))
+            }
+            <div class="svc-face svc-face--contact" style={`--k:${last}`} data-face={last}>
+              <p class="mono svc-contact-where">Bengaluru <span>/</span> Udupi</p>
+              <a href="#contact" class="btn" tabindex="-1">
+                Start a project
+                <span class="btn-icon"><Icon name="solar:arrow-right-up-linear" /></span>
+              </a>
+              <p class="mono svc-contact-mail">{site.email}</p>
+              <span class="svc-shade" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ol class="svc-steps mono" aria-hidden="true" data-svc-steps>
+        {
+          services.map((s, i) => (
+            <li data-step={i}>
+              <span>0{i + 1}</span>
+              {s.short}
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+
+  <!-- Semantic content: always in the DOM; the visible view without JS or with reduced motion -->
+  <ol class="svc-list wrap">
+    {
+      services.map((s, i) => (
+        <li class="svc-item">
+          <figure class="svc-item-photo">
+            <Image
+              quality={72}
+              src={photo(s.photo)}
+              alt={s.photoAlt}
+              widths={[640, 960, 1400]}
+              sizes="(max-width: 860px) 100vw, 50vw"
+              loading="lazy"
+            />
+          </figure>
+          <div class="svc-item-text">
+            <p class="mono svc-idx">
+              0{i + 1} — {s.code}
+            </p>
+            <h3 class="display">{s.title}</h3>
+            <p class="svc-statement">{s.statement}</p>
+            <ul class="svc-scope">
+              {s.scope.map((x) => (
+                <li>{x}</li>
+              ))}
+            </ul>
+            <p class="mono svc-codes">{s.codes}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .svc {
+    position: relative;
+    background: var(--ink);
+    /* Cube block ~60% of the viewport; each prism is half of it */
+    --w: min(60vw, 1000px);
+    --h: min(calc(var(--w) / 2 * 1.08), 54svh);
+  }
+
+  /* ---------- Static view (no JS / reduced motion) ---------- */
+  .svc-stage {
+    padding-top: clamp(96px, 14vh, 180px);
+    padding-bottom: clamp(48px, 8vh, 96px);
+  }
+  .svc-title {
+    text-align: center;
+    font-size: clamp(4rem, 10vw, 10rem);
+  }
+  .svc-cube,
+  .svc-steps {
+    display: none;
+  }
+
+  .svc-list {
+    display: grid;
+    gap: clamp(40px, 8vh, 96px);
+    padding-bottom: clamp(80px, 12vh, 160px);
+  }
+  .svc-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    min-height: 70vh;
+  }
+  .svc-item:nth-child(even) .svc-item-photo {
+    order: 2;
+  }
+  .svc-item-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .svc-item-text {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    padding: clamp(24px, 4vw, 56px);
+    background: var(--ultra);
+  }
+  .svc-item-text h3 {
+    font-size: clamp(2rem, 3.6vw, 4.2rem);
+    max-width: 12ch;
+  }
+  .svc-idx,
+  .svc-codes {
+    color: var(--amber);
+  }
+  .svc-statement {
+    font-size: var(--t-lg);
+    max-width: 30ch;
+    color: rgb(236 235 245 / 0.86);
+  }
+  .svc-scope {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    font-size: var(--t-sm);
+  }
+  .svc-scope li {
+    position: relative;
+    padding: 10px 0 0 18px;
+    border-top: 1px solid rgb(255 255 255 / 0.22);
+  }
+  .svc-scope li::before {
+    content: '+';
+    position: absolute;
+    left: 0;
+    color: var(--amber);
+    font-family: var(--f-mono);
+  }
+
+  /* ---------- 3D view ---------- */
+  :global(.is-3d) .svc-list {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  :global(.is-3d) .svc-track {
+    height: 410svh;
+  }
+  :global(.is-3d) .svc-stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: clip;
+    padding: 0;
+  }
+  :global(.is-3d) .svc-title {
+    position: absolute;
+    top: clamp(84px, 11svh, 116px);
+    left: 0;
+    right: 0;
+    transform-origin: 50% 50%;
+  }
+  :global(.is-3d) .svc-cube {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + clamp(28px, 5svh, 56px));
+    width: var(--w);
+    height: var(--h);
+    margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  :global(.is-3d) .svc-steps {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(20px, 4svh, 40px);
+    display: flex;
+    justify-content: center;
+    gap: clamp(16px, 3vw, 44px);
+  }
+
+  /* Each half is its own perspective box, vanishing at the shared seam, so the
+     top and bottom faces flare outward on both sides. Depth 4×h, as on ario.law;
+     the 0.875 scale (set in JS) cancels the front face's push toward the viewer. */
+  .svc-half {
+    position: relative;
+    perspective: calc(var(--h) * 4);
+    will-change: transform;
+  }
+  .svc-half--l {
+    perspective-origin: 100% 50%;
+  }
+  .svc-half--r {
+    perspective-origin: 0% 50%;
+  }
+  .svc-prism {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+  .svc-face {
+    --dir: 1;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    backface-visibility: hidden;
+    transform: rotateX(calc(var(--k) * -90deg * var(--dir))) translateZ(calc(var(--h) / 2));
+  }
+  .svc-half--r .svc-face {
+    --dir: -1;
+  }
+  .svc-shade {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Copy faces: paper sheets, set like a drawing title block */
+  .svc-face--text {
+    display: flex;
+    flex-direction: column;
+    padding: calc(var(--h) * 0.055);
+    background: var(--paper);
+    color: var(--paper-ink);
+  }
+  .svc-face-top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgb(23 21 31 / 0.45);
+    color: rgb(23 21 31 / 0.72);
+  }
+  .svc-face-title {
+    margin-top: auto;
+    font-size: calc(var(--h) * 0.125);
+    line-height: 0.9;
+    max-width: 9ch;
+  }
+  .svc-face-title em {
+    color: var(--ultra);
+  }
+  .svc-face-quote {
+    margin-top: calc(var(--h) * 0.035);
+    max-width: 26ch;
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: calc(var(--h) * 0.044);
+    line-height: 1.18;
+    color: rgb(23 21 31 / 0.78);
+    text-wrap: pretty;
+  }
+  .svc-face-scope {
+    margin-top: calc(var(--h) * 0.05);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 14px;
+    font-size: clamp(8.5px, calc(var(--h) * 0.02), 10px);
+    line-height: 1.35;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .svc-face-scope li {
+    position: relative;
+    padding: 6px 0 6px 13px;
+    border-top: 1px solid rgb(23 21 31 / 0.2);
+  }
+  .svc-face-scope li::before {
+    content: '+';
+    position: absolute;
+    left: 0;
+    color: var(--ultra);
+  }
+
+  /* Photo faces */
+  .svc-face--photo {
+    background: var(--ink-3);
+  }
+  .svc-face--photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .svc-face-tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 5px 8px;
+    background: var(--amber);
+    color: var(--ink);
+  }
+  .svc-face-cap {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    color: var(--bone);
+    text-shadow: 0 1px 8px rgb(0 0 0 / 0.6);
+  }
+
+  /* Last face: black, the way in */
+  .svc-face--contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: calc(var(--h) * 0.055);
+    background: #050409;
+  }
+  .svc-contact-where {
+    color: rgb(236 235 245 / 0.7);
+  }
+  .svc-contact-where span {
+    color: var(--amber);
+    padding-inline: 0.4em;
+  }
+  .svc-contact-mail {
+    color: rgb(236 235 245 / 0.55);
+    text-transform: none;
+  }
+
+  .svc-steps li {
+    color: var(--mute);
+    transition: color 0.4s var(--ease-out);
+  }
+  .svc-steps li span {
+    margin-right: 8px;
+  }
+  .svc-steps li.is-active {
+    color: var(--bone);
+  }
+  .svc-steps li.is-active span {
+    color: var(--amber);
+  }
+
+  @media (max-width: 860px) {
+    .svc-item {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .svc-item-photo {
+      aspect-ratio: 4 / 3;
+      order: 0 !important;
+    }
+  }
+  @media (max-width: 760px) {
+    .svc {
+      --w: calc(100vw - 2 * var(--gutter));
+      --h: min(calc(var(--w) / 2 * 1.4), 50svh);
+    }
+    .svc-face-scope,
+    .svc-face-quote,
+    .svc-face-cap,
+    .svc-contact-mail {
+      display: none;
+    }
+    .svc-face-title {
+      font-size: calc(var(--h) * 0.1);
+    }
+    .svc-face-tag {
+      top: 8px;
+      left: 8px;
+    }
+    .svc-face--contact .btn {
+      padding: 0 10px 0 14px;
+      gap: 8px;
+      min-height: 42px;
+      font-size: 12px;
+    }
+    .svc-steps li:not(.is-active) {
+      display: none;
+    }
+  }
+</style>

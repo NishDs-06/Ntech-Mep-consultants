@@ -1,0 +1,151 @@
+---
+import Icon from './Icon.astro';
+import { clients } from '../data/clients.js';
+
+// Two drifting rows of cube tiles. Each row repeats its set once so the loop is seamless;
+// every fifth tile is one of the brochure's blue cubes.
+const half = Math.ceil(clients.length / 2);
+const rows = [clients.slice(0, half), clients.slice(half)];
+---
+
+<section class="cl" id="clients" aria-labelledby="cl-title" data-cl>
+  <header class="cl-head wrap">
+    <p class="eyebrow">Clients</p>
+    <h2 id="cl-title" class="cl-title display" data-reveal-heading>Trusted on sites across <em>Karnataka.</em></h2>
+    <p class="cl-intro" data-reveal-up>
+      Developers, architects and institutions we have designed for: single towers, hospitals, hotels and whole
+      campuses.
+    </p>
+  </header>
+
+  <ul class="sr-only">
+    {clients.map((c) => <li>{c.name}</li>)}
+  </ul>
+
+  <div class="cl-rows" aria-hidden="true">
+    {
+      rows.map((set, r) => (
+        <div class="cl-row" data-cl-row>
+          {[...set, ...set].map((c, i) => (
+            <div class:list={['cl-tile', { 'cl-tile--blue': (i + r * 2) % 5 === 3 }]}>
+              <span class="cl-no mono">C/{String(r * half + (i % set.length) + 1).padStart(2, '0')}</span>
+              <Icon name={c.icon} class="cl-icon" />
+              <span class="cl-name">{c.name}</span>
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .cl {
+    padding-block: clamp(96px, 16vh, 200px);
+    background: var(--ink);
+    overflow: clip;
+  }
+  .cl-head {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 22px;
+    padding-bottom: clamp(48px, 8vh, 88px);
+  }
+  .cl-head .eyebrow {
+    grid-column: 1 / -1;
+  }
+  .cl-title {
+    grid-column: 1 / span 7;
+    font-size: var(--t-2xl);
+  }
+  .cl-intro {
+    grid-column: 9 / -1;
+    align-self: end;
+    color: var(--mute);
+    max-width: 34ch;
+    text-wrap: pretty;
+  }
+
+  .cl-rows {
+    display: grid;
+    gap: 18px;
+    /* room for the lit top bevels */
+    padding-top: 14px;
+  }
+  .cl-row {
+    display: flex;
+    gap: 18px;
+    width: max-content;
+    will-change: transform;
+  }
+  .cl-row:nth-child(2) {
+    margin-left: -140px;
+  }
+
+  /* A cube seen face-on from slightly above: glossy front, lit top bevel */
+  .cl-tile {
+    --face: linear-gradient(172deg, #3a3a44 0%, #1a1a20 42%, #070709 100%);
+    --top: #4a4a54;
+    --fg: rgb(236 235 245 / 0.9);
+    --accent: var(--amber);
+    position: relative;
+    flex: none;
+    width: clamp(200px, 17vw, 260px);
+    aspect-ratio: 1.3;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    padding: 16px 18px 18px;
+    background: var(--face);
+    color: var(--fg);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.14),
+      inset 0 -1px 0 rgb(0 0 0 / 0.6);
+  }
+  .cl-tile::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 12px;
+    background: var(--top);
+    transform: skewX(-42deg);
+    transform-origin: 0 100%;
+  }
+  .cl-tile--blue {
+    --face: linear-gradient(172deg, #45bdf0 0%, #168fca 46%, #085a87 100%);
+    --top: #6dcdf4;
+    --fg: #031421;
+    --accent: #031421;
+  }
+  .cl-no {
+    color: color-mix(in srgb, var(--fg) 55%, transparent);
+  }
+  .cl-tile :global(.cl-icon) {
+    align-self: end;
+    width: 26px;
+    height: 26px;
+    color: var(--accent);
+  }
+  .cl-name {
+    font-family: var(--f-display);
+    font-stretch: 80%;
+    font-weight: 600;
+    font-size: clamp(1.25rem, 1.5vw, 1.625rem);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 860px) {
+    .cl-title,
+    .cl-intro {
+      grid-column: 1 / -1;
+    }
+    .cl-tile {
+      width: 168px;
+      padding: 12px 14px 14px;
+    }
+  }
+</style>

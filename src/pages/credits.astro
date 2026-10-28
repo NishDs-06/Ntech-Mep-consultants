@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import credits from '../assets/credits.json';
+---
+
+<Base title="Image credits — N-Tech" description="Credits and licences for photography used on this site.">
+  <section class="cr wrap" aria-labelledby="cr-title">
+    <p class="eyebrow">Image credits</p>
+    <h1 id="cr-title" class="display cr-title">Photography</h1>
+    <p class="cr-lede">
+      Placeholder photography from Wikimedia Commons, used under the licences listed. These are stand-ins and do not
+      show N-Tech projects.
+    </p>
+    <ul class="cr-list">
+      {
+        credits.map((c) => (
+          <li>
+            <a href={c.source} rel="noopener" target="_blank">
+              {c.title.replace(/\.jpe?g$/i, '')}
+            </a>
+            <span>{c.author}</span>
+            <span class="mono">{c.license}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .cr {
+    padding-top: clamp(140px, 22vh, 220px);
+    padding-bottom: 120px;
+    display: grid;
+    gap: 24px;
+  }
+  .cr-title {
+    font-size: var(--t-2xl);
+  }
+  .cr-lede {
+    color: var(--mute);
+    max-width: 60ch;
+  }
+  .cr-list {
+    margin-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+  .cr-list li {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--t-sm);
+  }
+  .cr-list a {
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+  }
+  .cr-list a:hover {
+    text-decoration-color: var(--amber);
+  }
+  .cr-list .mono {
+    color: var(--amber);
+  }
+  @media (max-width: 700px) {
+    .cr-list li {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>

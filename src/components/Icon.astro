@@ -1,0 +1,23 @@
+---
+// Inline Solar icons from the Iconify JSON set, resolved at build time.
+import { getIconData, iconToSVG, iconToHTML } from '@iconify/utils';
+import solar from '@iconify-json/solar/icons.json';
+
+interface Props {
+  name: string;
+  class?: string;
+  label?: string;
+}
+const { name, class: className, label } = Astro.props;
+const data = getIconData(solar, name.replace(/^solar:/, ''));
+if (!data) throw new Error(`Unknown Solar icon: ${name}`);
+const svg = iconToSVG(data, { height: '1em' });
+const attrs = {
+  ...svg.attributes,
+  class: className ?? '',
+  ...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true', focusable: 'false' }),
+};
+const html = iconToHTML(svg.body, attrs);
+---
+
+<Fragment set:html={html} />

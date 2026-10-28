@@ -1,0 +1,290 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { featured, projects } from '../data/projects.js';
+import { photo } from '../lib/photos.js';
+
+const scopeName = { PHE: 'Public health', ELE: 'Electrical', FPS: 'Fire protection' };
+---
+
+<section class="pj" id="projects" aria-labelledby="pj-title" data-pj>
+  <header class="pj-head wrap">
+    <p class="eyebrow">Selected projects</p>
+    <h2 id="pj-title" class="pj-title display" data-reveal-heading>Buildings that work because <em>the services do.</em></h2>
+  </header>
+
+  <div class="pj-stage" data-pj-stage>
+    {
+      featured.map((p, i) => (
+        <article class="pj-item" data-pj-item aria-labelledby={`pj-${p.id}`}>
+          <div class="pj-move" data-pj-move>
+            <div class="pj-frame" data-pj-frame>
+              <Image quality={72}
+                src={photo(p.photo)}
+                alt={p.alt}
+                widths={[800, 1280, 1920]}
+                sizes="100vw"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                data-pj-img
+              />
+              <div class="pj-shade" />
+            </div>
+            <p class="pj-tag mono" data-pj-tag>
+              P—0{i + 1} / {p.sector}
+            </p>
+          </div>
+
+          <div class="pj-info wrap" data-pj-info>
+            <p class="pj-num display" aria-hidden="true">
+              0{i + 1}
+            </p>
+            <div class="pj-main">
+              <p class="mono pj-sector">
+                {p.sector} — {p.city}
+              </p>
+              <h3 id={`pj-${p.id}`} class="pj-name display" data-pj-name>
+                {p.name}
+              </h3>
+              <p class="pj-blurb" data-pj-fade>
+                {p.blurb}
+              </p>
+            </div>
+            <dl class="pj-meta" data-pj-fade>
+              <div>
+                <dt class="mono">Built-up area</dt>
+                <dd>{p.area}</dd>
+              </div>
+              <div>
+                <dt class="mono">Completed</dt>
+                <dd>{p.year}</dd>
+              </div>
+              <div>
+                <dt class="mono">Our scope</dt>
+                <dd>{p.scope.map((s) => scopeName[s]).join(', ')}</dd>
+              </div>
+            </dl>
+          </div>
+        </article>
+      ))
+    }
+
+    <div class="pj-hud wrap" aria-hidden="true">
+      <span class="mono"><b data-pj-count>01</b> / 0{featured.length}</span>
+      <span class="pj-bar"><i data-pj-bar></i></span>
+      <span class="mono">Scroll</span>
+    </div>
+  </div>
+
+  <div class="pj-more wrap">
+    <p class="pj-more-copy">
+      <span class="display">{projects.length}+</span>
+      <span>projects across healthcare, hospitality, housing, offices and industry.</span>
+    </p>
+    <a href="/projects" class="btn">
+      View all projects
+      <span class="btn-icon"><Icon name="solar:arrow-right-linear" /></span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .pj {
+    position: relative;
+    background: var(--ink);
+    padding-top: clamp(96px, 14vh, 180px);
+  }
+  .pj-head {
+    padding-bottom: clamp(40px, 7vh, 80px);
+    display: grid;
+    gap: 24px;
+  }
+  .pj-title {
+    font-size: var(--t-2xl);
+    max-width: 18ch;
+  }
+
+  /* ---------- Default: stacked cards (no-JS / reduced motion) ---------- */
+  .pj-stage {
+    display: grid;
+    gap: clamp(48px, 8vh, 96px);
+  }
+  .pj-item {
+    position: relative;
+  }
+  .pj-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    max-height: 88vh;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .pj-frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .pj-shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(5 4 13 / 0.92) 0%, rgb(5 4 13 / 0.35) 45%, transparent 70%),
+      linear-gradient(to right, rgb(5 4 13 / 0.5), transparent 50%);
+  }
+  .pj-tag {
+    display: none;
+  }
+  .pj-info {
+    display: grid;
+    grid-template-columns: auto 1fr minmax(240px, 0.6fr);
+    gap: 20px clamp(20px, 4vw, 64px);
+    align-items: end;
+    padding-block: 28px;
+  }
+  .pj-num {
+    font-size: clamp(4rem, 10vw, 11rem);
+    line-height: 0.75;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--amber);
+  }
+  .pj-sector {
+    color: var(--amber);
+    margin-bottom: 12px;
+  }
+  .pj-name {
+    font-size: clamp(2.4rem, 5.6vw, 6.4rem);
+  }
+  .pj-blurb {
+    margin-top: 18px;
+    max-width: 52ch;
+    color: rgb(236 235 245 / 0.82);
+  }
+  .pj-meta {
+    display: grid;
+    gap: 14px;
+  }
+  .pj-meta div {
+    display: grid;
+    gap: 4px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .pj-meta dt {
+    color: var(--mute);
+  }
+  .pj-hud {
+    display: none;
+  }
+
+  /* ---------- Enhanced: pinned sequence ---------- */
+  :global(.is-pinned) .pj-stage {
+    display: block;
+    position: relative;
+    height: 100svh;
+    overflow: clip;
+  }
+  :global(.is-pinned) .pj-item {
+    position: absolute;
+    inset: 0;
+  }
+  :global(.is-pinned) .pj-move {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+  }
+  :global(.is-pinned) .pj-frame {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    max-height: none;
+    will-change: clip-path;
+  }
+  :global(.is-pinned) .pj-tag {
+    display: block;
+    position: absolute;
+    left: 34%;
+    right: 34%;
+    bottom: calc(29% - 2.4em);
+    display: flex;
+    justify-content: space-between;
+    color: var(--bone);
+  }
+  :global(.is-pinned) .pj-info {
+    position: absolute;
+    inset: auto 0 0;
+    padding-bottom: 96px;
+    pointer-events: none;
+  }
+  :global(.is-pinned) .pj-hud {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-block: 24px;
+  }
+  .pj-hud b {
+    color: var(--amber);
+    font-weight: 500;
+  }
+  .pj-bar {
+    flex: 1;
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .pj-bar i {
+    display: block;
+    height: 100%;
+    background: var(--amber);
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+  }
+
+  .pj-more {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 28px;
+    padding-block: clamp(64px, 12vh, 140px);
+  }
+  .pj-more-copy {
+    display: flex;
+    align-items: end;
+    gap: 20px;
+    max-width: 560px;
+    color: var(--mute);
+  }
+  .pj-more-copy .display {
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    color: var(--bone);
+    line-height: 0.8;
+  }
+
+  @media (max-width: 860px) {
+    .pj-info {
+      grid-template-columns: 1fr;
+    }
+    .pj-num {
+      display: none;
+    }
+    :global(.is-pinned) .pj-info {
+      padding-bottom: 80px;
+      gap: 14px;
+    }
+    :global(.is-pinned) .pj-blurb {
+      display: none;
+    }
+    .pj-meta {
+      grid-template-columns: 1fr 1fr;
+    }
+    .pj-meta div:last-child {
+      grid-column: 1 / -1;
+    }
+    :global(.is-pinned) .pj-tag {
+      left: 12%;
+      right: 12%;
+      bottom: calc(32% - 2.4em);
+    }
+  }
+</style>

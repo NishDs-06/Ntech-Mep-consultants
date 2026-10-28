@@ -1,0 +1,295 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { projects, sectors } from '../data/projects.js';
+import { photo } from '../lib/photos.js';
+
+const scopeName = { PHE: 'PHE', ELE: 'Electrical', FPS: 'Fire' };
+const counts = Object.fromEntries(sectors.map((s) => [s, projects.filter((p) => p.sector === s).length]));
+---
+
+<Base
+  title="Projects — N-Tech MEP Consultants"
+  description="Public health, electrical and fire protection projects designed by N-Tech across residential, commercial, healthcare, hospitality and industrial buildings."
+>
+  <section class="pp wrap" aria-labelledby="pp-title">
+    <header class="pp-head">
+      <p class="eyebrow">Projects — {projects.length}</p>
+      <h1 id="pp-title" class="pp-title display" data-reveal-heading>Every building we have helped run.</h1>
+      <p class="pp-lede" data-reveal-up>
+        A running index of the projects we have designed services for. Filter by sector to see the work closest to
+        yours.
+      </p>
+    </header>
+
+    <div class="pp-filters" role="group" aria-label="Filter by sector" data-filters>
+      <button type="button" class="pp-chip" aria-pressed="true" data-filter="all">
+        All <span class="mono">{projects.length}</span>
+      </button>
+      {
+        sectors.map((s) => (
+          <button type="button" class="pp-chip" aria-pressed="false" data-filter={s}>
+            {s} <span class="mono">{counts[s]}</span>
+          </button>
+        ))
+      }
+    </div>
+    <p class="sr-only" aria-live="polite" data-filter-status></p>
+
+    <ul class="pp-grid" data-grid>
+      {
+        projects.map((p, i) => (
+          <li class="pp-card" data-sector={p.sector}>
+            <figure class="pp-photo">
+              <Image quality={72}
+                src={photo(p.photo)}
+                alt={p.alt}
+                widths={[480, 800, 1200]}
+                sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                loading={i < 3 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+              <span class="pp-corner tl" />
+              <span class="pp-corner br" />
+            </figure>
+            <div class="pp-meta">
+              <p class="mono pp-idx">{String(i + 1).padStart(2, '0')}</p>
+              <h2 class="pp-name">{p.name}</h2>
+              <p class="pp-sub">
+                {p.sector} · {p.city} · {p.year}
+              </p>
+              <p class="mono pp-scope">{p.scope.map((s) => scopeName[s]).join(' / ')}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .pp {
+    padding-top: clamp(140px, 22vh, 220px);
+    padding-bottom: clamp(96px, 14vh, 160px);
+  }
+  .pp-head {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: 20px;
+    row-gap: 24px;
+  }
+  .pp-head .eyebrow {
+    grid-column: 1 / -1;
+  }
+  .pp-title {
+    grid-column: 1 / span 8;
+    font-size: var(--t-2xl);
+  }
+  .pp-lede {
+    grid-column: 9 / -1;
+    align-self: end;
+    color: var(--mute);
+  }
+  .pp-filters {
+    position: sticky;
+    top: 76px;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-block: clamp(40px, 7vh, 72px) 32px;
+    padding-block: 10px;
+  }
+  .pp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: rgb(5 4 13 / 0.75);
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 0 0 1px var(--line-strong);
+    font-size: var(--t-sm);
+    transition:
+      background 0.3s,
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  .pp-chip .mono {
+    color: var(--mute);
+    font-size: 10px;
+  }
+  .pp-chip:hover {
+    box-shadow: inset 0 0 0 1px var(--bone);
+  }
+  .pp-chip[aria-pressed='true'] {
+    background: var(--amber);
+    color: var(--ink);
+    box-shadow: none;
+  }
+  .pp-chip[aria-pressed='true'] .mono {
+    color: var(--ink);
+  }
+
+  .pp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(28px, 4vw, 56px) 20px;
+  }
+  .pp-card[hidden] {
+    display: none;
+  }
+  .pp-card:nth-child(3n + 2) {
+    margin-top: clamp(0px, 6vw, 96px);
+  }
+  .pp-photo {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--ink-3);
+  }
+  .pp-photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition:
+      transform 1.2s var(--ease-out),
+      filter 0.6s;
+    filter: saturate(0.85);
+  }
+  .pp-corner {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 0 solid var(--cyan);
+    opacity: 0;
+    transition:
+      opacity 0.4s,
+      transform 0.6s var(--ease-out);
+  }
+  .pp-corner.tl {
+    top: 14px;
+    left: 14px;
+    border-width: 1.5px 0 0 1.5px;
+    transform: translate(8px, 8px);
+  }
+  .pp-corner.br {
+    right: 14px;
+    bottom: 14px;
+    border-width: 0 1.5px 1.5px 0;
+    transform: translate(-8px, -8px);
+  }
+  @media (hover: hover) {
+    .pp-card:hover .pp-photo :global(img) {
+      transform: scale(1.08);
+      filter: saturate(1.05);
+    }
+    .pp-card:hover .pp-corner {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .pp-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    row-gap: 4px;
+    padding-top: 16px;
+  }
+  .pp-idx {
+    grid-row: span 3;
+    color: var(--amber);
+    padding-top: 0.4em;
+  }
+  .pp-name {
+    font-size: var(--t-lg);
+    font-weight: 600;
+    font-stretch: 85%;
+    letter-spacing: -0.015em;
+  }
+  .pp-sub {
+    color: var(--mute);
+    font-size: var(--t-sm);
+  }
+  .pp-scope {
+    color: var(--bone);
+    font-size: 10px;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 1100px) {
+    .pp-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .pp-card:nth-child(3n + 2) {
+      margin-top: 0;
+    }
+  }
+  @media (max-width: 860px) {
+    .pp-title,
+    .pp-lede {
+      grid-column: 1 / -1;
+    }
+    .pp-filters {
+      top: 70px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      scrollbar-width: none;
+    }
+    .pp-chip {
+      flex: none;
+    }
+  }
+  @media (max-width: 600px) {
+    .pp-grid {
+      grid-template-columns: 1fr;
+    }
+    .pp-photo {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>
+
+<script>
+  import { gsap, ScrollTrigger, lenis, reduceMotion, revealHeading, revealUp } from '../scripts/core.js';
+
+  document.querySelectorAll<HTMLElement>('[data-reveal-heading]').forEach((el) => revealHeading(el));
+  document.querySelectorAll<HTMLElement>('[data-reveal-up], .eyebrow').forEach((el) => revealUp(el, el));
+
+  const cards = [...document.querySelectorAll<HTMLElement>('.pp-card')];
+  const status = document.querySelector('[data-filter-status]')!;
+
+  if (!reduceMotion) {
+    ScrollTrigger.batch(cards, {
+      start: 'top 92%',
+      once: true,
+      onEnter: (batch) =>
+        gsap.from(batch, { y: 60, opacity: 0, duration: 1.1, ease: 'expo.out', stagger: 0.08, overwrite: true }),
+    });
+  }
+
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  chips.forEach((chip) =>
+    chip.addEventListener('click', () => {
+      const f = chip.dataset.filter!;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      const show = cards.filter((c) => f === 'all' || c.dataset.sector === f);
+      cards.forEach((c) => (c.hidden = !show.includes(c)));
+      status.textContent = `Showing ${show.length} ${f === 'all' ? '' : f.toLowerCase() + ' '}projects`;
+      if (!reduceMotion) {
+        gsap.fromTo(show, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'expo.out', stagger: 0.04, overwrite: true });
+      }
+      ScrollTrigger.refresh();
+      // The list may have shrunk under the reader — bring its top back into view.
+      const grid = document.querySelector<HTMLElement>('[data-grid]')!;
+      if (grid.getBoundingClientRect().top < 0) {
+        const y = grid.getBoundingClientRect().top + scrollY - 150;
+        lenis ? lenis.scrollTo(y, { duration: 1.2 }) : scrollTo({ top: y });
+      }
+    }),
+  );
+</script>
