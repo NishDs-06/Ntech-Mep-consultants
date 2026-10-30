@@ -31,6 +31,7 @@ const {
       document.documentElement.classList.add('js');
       try {
         if (sessionStorage.getItem('nt-intro')) document.documentElement.classList.add('intro-seen');
+        else if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro-play');
       } catch (e) {}
     </script>
   </head>

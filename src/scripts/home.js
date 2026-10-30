@@ -33,13 +33,21 @@ function intro() {
   const loader = $('[data-loader]');
   const seen = root.classList.contains('intro-seen');
   if (!loader || seen || reduceMotion) {
+    root.classList.remove('intro-play');
     loader?.remove();
-    return heroIn(seen ? 0.1 : 0);
+    heroIn(seen ? 0.1 : 0);
+    return false;
   }
 
   lenis?.stop();
+  // During the intro any slow frame (>50ms) counts as one normal frame, so the
+  // globe pauses for it instead of jumping; the page's own setting (0) comes
+  // back on hand-off.
+  gsap.ticker.lagSmoothing(50, 16);
+  // The hero sits under the loader unpainted (.intro-play, set before first
+  // paint); it is still fetched and decoded, and shown again in the hold.
   let ready = false;
-  const gate = heroReady().then(() => (ready = true));
+  const loaded = heroReady();
 
   const ellipses = $$('[data-sphere] ellipse', loader);
   const state = { spin: -280, grow: 0 };
@@ -58,11 +66,12 @@ function intro() {
 
   const count = $('[data-loader-count]', loader);
   const counter = { v: 0 };
-  const show = () => (count.textContent = String(Math.round(ready ? counter.v : Math.min(99, counter.v))).padStart(3, '0'));
+  const show = () => (count.textContent = String(Math.round(ready ? counter.v : Math.min(99, counter.v))));
   const chars = $$('[data-loader-word] span', loader);
   const tag = $('[data-loader-tag]', loader);
 
   const tl = gsap.timeline({
+    paused: true,
     defaults: { ease: 'expo.out' },
     onComplete: () => {
       try {
@@ -72,17 +81,20 @@ function intro() {
   });
 
   tl.set(loader, { animation: 'none' })
-    .from('.loader-grid', { opacity: 0, scale: 1.15, duration: 3.2, ease: 'power2.out' }, 0)
+    // from a hair above 0, so the field is drawn during the wait before play,
+    // not in the first frame of the spin (fully transparent layers aren't drawn)
+    .from('.loader-grid', { opacity: 0.01, scale: 1.06, duration: 3.2, ease: 'power2.out' }, 0)
     .to(state, { grow: 1, duration: 1.3, ease: 'back.out(1.6)', onUpdate: draw }, 0.1)
     .to(state, { spin: 0, duration: 3, ease: 'expo.inOut', onUpdate: draw }, 0.1)
     .to(counter, { v: 100, duration: 3.6, ease: 'power2.inOut', onUpdate: show }, 0)
     .from(chars, { yPercent: 115, duration: 1.2, stagger: 0.06 }, 1.6)
     .from(tag, { opacity: 0, letterSpacing: '0.9em', duration: 1.6 }, 2.1)
-    // hold here until the hero is decoded
+    // hold here until the hero is decoded and the sections below are set up
     .call(() => {
-      if (ready) return;
       tl.pause();
-      gate.then(() => {
+      root.classList.remove('intro-play');
+      Promise.all([loaded, setupSections()]).then(() => {
+        ready = true;
         show();
         tl.play();
       });
@@ -92,9 +104,25 @@ function intro() {
     .to('[data-loader-wipe]', { clipPath: 'inset(0% 0 0 0)', duration: 1, ease: 'expo.inOut' }, 4.15)
     .call(() => {
       loader.remove();
+      gsap.ticker.lagSmoothing(0);
       lenis?.start();
     }, null, 5.15)
     .add(heroIn(), 5.15);
+
+  // Start once the page's first layout and paint are done: wait for three
+  // normal-length frames in a row (at most 0.8s), so the spin never begins
+  // inside the browser's busiest frames.
+  const t0 = performance.now();
+  let last = t0;
+  let calm = 0;
+  const settle = (now) => {
+    calm = now - last < 24 ? calm + 1 : 0;
+    last = now;
+    if (calm >= 3 || now - t0 > 800) tl.play();
+    else requestAnimationFrame(settle);
+  };
+  requestAnimationFrame(settle);
+  return true;
 }
 
 /* ------------------------------------------------------------------
@@ -373,9 +401,27 @@ function reveals() {
   $$('[data-reveal-up]').forEach((el) => revealUp(el, el));
 }
 
-intro();
-heroScroll();
-services();
-clients();
-projectsSeq();
-reveals();
+/* ------------------------------------------------------------------
+   Everything below the first screen: pins, splits and measurements.
+   With the loader up, this runs while it holds near 100%, one section per
+   idle slot, so it never shares a frame with the globe. Otherwise at once.
+------------------------------------------------------------------- */
+const sections = [heroScroll, services, clients, projectsSeq, reveals];
+
+function setupSections() {
+  return new Promise((done) => {
+    const idle = window.requestIdleCallback ?? ((cb) => setTimeout(cb, 16));
+    const next = () => {
+      const fn = sections.shift();
+      if (!fn) {
+        ScrollTrigger.refresh();
+        return done();
+      }
+      fn();
+      idle(next, { timeout: 120 });
+    };
+    next();
+  });
+}
+
+if (!intro()) sections.splice(0).forEach((fn) => fn());

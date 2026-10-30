@@ -6,14 +6,14 @@ import Logo from './Logo.astro';
   <div class="loader-grid"></div>
   <div class="loader-center" data-loader-center>
     <Logo class="loader-logo" wordmark={false} />
-    <div class="loader-word display" data-loader-word>
+    <div class="loader-word" data-loader-word>
       <span>N</span><span class="dash">-</span><span>T</span><span>e</span><span>c</span><span>h</span>
     </div>
-    <p class="loader-tag mono" data-loader-tag>MEP Consultants</p>
+    <p class="loader-tag" data-loader-tag>MEP Consultants</p>
   </div>
   <div class="loader-foot wrap">
-    <span class="mono">PHE <i>/</i> Electrical <i>/</i> Fire</span>
-    <span class="loader-count display" data-loader-count>000</span>
+    <span class="loader-disc">Public health <i>/</i> Electrical <i>/</i> Fire protection</span>
+    <span class="loader-count"><span data-loader-count>0</span><i>%</i></span>
   </div>
   <div class="loader-wipe" data-loader-wipe style="background-image: url(/hero/vines.svg)"></div>
 </div>
@@ -22,17 +22,30 @@ import Logo from './Logo.astro';
   .loader {
     display: none;
   }
+  /* Deep brochure blue rather than flat black: the same night the vine field sits in */
   :global(.js) .loader {
     position: fixed;
     inset: 0;
     z-index: 150;
     display: grid;
     place-items: center;
-    background: var(--ink);
+    background: #06041d;
     animation: loader-failsafe 0.6s 10s forwards;
   }
   :global(.js.intro-seen) .loader {
     display: none;
+  }
+  /* While the loader plays, the hero under it isn't painted at all, from the
+     very first frame (the script shows it again in the hold). Failsafe: if the
+     script never runs, it comes back on its own with the loader's failsafe. */
+  :global(.intro-play [data-hero]) {
+    visibility: hidden;
+    animation: hero-failsafe 0s 10s forwards;
+  }
+  @keyframes hero-failsafe {
+    to {
+      visibility: visible;
+    }
   }
   @keyframes loader-failsafe {
     to {
@@ -40,16 +53,24 @@ import Logo from './Logo.astro';
       visibility: hidden;
     }
   }
+  /* The hero's vines, dimmed and scanlined, instead of a generic hairline grid.
+     It fades and settles in, so it gets its own layer: drawn once, then only
+     moved by the compositor. The vignette is painted on top, not a mask,
+     because a mask on a moving full-screen layer is redrawn every frame. */
   .loader-grid {
     position: absolute;
     inset: 0;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size: 8vmin 8vmin;
-    background-position: center;
-    mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 60%);
-    opacity: 0.5;
+    background: #0e0880 url(/hero/vines.svg) 50% 50% / cover no-repeat;
+    opacity: 0.32;
+    will-change: transform, opacity;
+  }
+  .loader-grid::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(85% 75% at 50% 50%, transparent 20%, #06041d 85%),
+      repeating-linear-gradient(to bottom, rgb(2 1 30 / 0.45) 0 1px, transparent 1px 3px);
   }
   .loader-center {
     position: relative;
@@ -60,48 +81,75 @@ import Logo from './Logo.astro';
   .loader-center :global(.loader-logo) {
     font-size: clamp(40px, 12vw, 172px);
   }
+  /* The brochure wordmark: blue letters in a thick white sticker outline */
   .loader-word {
     display: flex;
     font-size: clamp(28px, 11vw, 168px);
     font-family: var(--f-logo);
     font-weight: 400;
-    letter-spacing: -0.045em;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--poster-blue);
+    -webkit-text-stroke: 0.16em #fff;
+    paint-order: stroke fill;
+    /* text-shadow rides along with each rising letter; a filter on the whole
+       word would be re-rendered on every frame of the rise */
+    text-shadow: 0 0.05em 0.06em rgb(0 0 0 / 0.55);
+    /* room for the outline inside the rise mask */
     overflow: clip;
-    padding-bottom: 0.04em;
+    padding: 0.14em 0.12em;
+    margin: -0.14em -0.12em;
   }
   .loader-word span {
     display: inline-block;
+    will-change: transform;
   }
-  .loader-word .dash {
-    color: var(--amber);
-  }
+  /* Same wide, heavy amber line as on the cover */
   .loader-tag {
     position: absolute;
-    left: calc(100% - 0.4em);
-    bottom: -2.4em;
-    transform: translateX(-100%);
+    right: 0.2em;
+    bottom: -2.1em;
+    margin: 0;
     white-space: nowrap;
+    font-family: var(--f-display);
+    font-size: clamp(12px, 1.7vw, 26px);
+    font-stretch: 125%;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--amber);
-    letter-spacing: 0.32em;
   }
   .loader-foot {
     position: absolute;
-    inset: auto 0 max(22px, env(safe-area-inset-bottom));
+    inset: auto 0 max(24px, env(safe-area-inset-bottom));
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    color: var(--mute);
+    align-items: baseline;
+    gap: 24px;
   }
-  .loader-foot i {
+  .loader-disc {
+    font-size: var(--t-sm);
+    font-weight: 500;
+    color: rgb(236 235 245 / 0.72);
+  }
+  .loader-disc i {
     font-style: normal;
     color: var(--amber);
-    padding: 0 0.4em;
+    padding: 0 0.45em;
   }
+  /* A quiet readout in the logo's face, not a billboard number */
   .loader-count {
-    font-size: clamp(48px, 8vw, 120px);
+    font-family: var(--f-logo);
+    font-size: clamp(28px, 3.4vw, 48px);
+    line-height: 1;
     color: var(--bone);
     font-variant-numeric: tabular-nums;
-    line-height: 0.8;
+  }
+  .loader-count i {
+    font-style: normal;
+    color: var(--amber);
+    margin-left: 0.06em;
   }
   /* Wipes in the hero's own dark-blue vine field, so the hand-off is seamless */
   .loader-wipe {
@@ -116,5 +164,14 @@ import Logo from './Logo.astro';
     position: absolute;
     inset: 0;
     background: repeating-linear-gradient(to bottom, rgb(2 1 30 / 0.3) 0 1px, transparent 1px 3px);
+  }
+
+  @media (max-width: 560px) {
+    .loader-disc {
+      display: none;
+    }
+    .loader-foot {
+      justify-content: flex-end;
+    }
   }
 </style>
