@@ -53,8 +53,7 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="ft-mark" aria-hidden="true">
-      <Logo wordmark={false} class="ft-sphere" />
-      <span class="display">N-Tech</span>
+      <Logo sticker />
     </div>
 
     <div class="ft-bottom mono">
@@ -171,29 +170,13 @@ const year = new Date().getFullYear();
     font-size: var(--t-lg);
     line-height: 1.4;
   }
+  /* The hero's lockup at full width: dot globe + sticker wordmark in the logo face */
   .ft-mark {
     display: flex;
     align-items: center;
     margin-top: 12px;
-    font-size: clamp(3rem, 16.5vw, 19rem);
-    line-height: 0.8;
+    font-size: clamp(3rem, 21vw, 24rem);
     white-space: nowrap;
-  }
-  .ft-mark .display {
-    font-family: var(--f-logo);
-    font-weight: 400;
-    font-size: 0.62em;
-    /* tuck into the globe's open side, as in the logo */
-    margin-left: -0.7em;
-    letter-spacing: -0.04em;
-    color: transparent;
-    background: linear-gradient(180deg, rgb(91 108 255 / 0.5), rgb(91 108 255 / 0) 88%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-stroke: 1px rgb(120 135 255 / 0.85);
-  }
-  .ft-mark :global(.ft-sphere) {
-    font-size: 0.62em;
   }
   .ft-bottom {
     display: flex;

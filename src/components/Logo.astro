@@ -4,13 +4,15 @@ import { DOTS, project } from '../lib/sphere.js';
 interface Props {
   class?: string;
   wordmark?: boolean;
+  /** The brochure treatment: blue letters in a thick white sticker outline */
+  sticker?: boolean;
   id?: string;
 }
-const { class: className = '', wordmark = true, id } = Astro.props;
+const { class: className = '', wordmark = true, sticker = false, id } = Astro.props;
 const dots = DOTS.map((d) => ({ ...d, ...project(d) }));
 ---
 
-<span class:list={['logo', className]} id={id}>
+<span class:list={['logo', { 'logo--sticker': sticker }, className]} id={id}>
   <svg class="logo-sphere" viewBox="0 0 100 100" aria-hidden="true" data-sphere>
     {
       dots.map((d) => (
@@ -64,5 +66,14 @@ const dots = DOTS.map((d) => ({ ...d, ...project(d) }));
   }
   .logo-dash {
     color: var(--amber);
+  }
+  .logo--sticker .logo-word {
+    color: var(--poster-blue);
+    -webkit-text-stroke: 0.16em #fff;
+    paint-order: stroke fill;
+    filter: drop-shadow(0 0.05em 0.06em rgb(0 0 0 / 0.55));
+  }
+  .logo--sticker .logo-dash {
+    color: inherit;
   }
 </style>

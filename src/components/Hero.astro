@@ -28,7 +28,7 @@ import { site } from '../data/site.js';
 
     <div class="hero-band wrap" data-hero-lockup>
       <h1 id="hero-title" class="hero-lockup">
-        <Logo class="hero-logo" />
+        <Logo class="hero-logo" sticker />
         <span class="hero-tag" data-hero-tag>MEP Consultants</span>
       </h1>
     </div>
@@ -154,16 +154,6 @@ import { site } from '../data/site.js';
     gap: 0.3em 0.55em;
     font-size: clamp(2.75rem, min(6.4vw, 11svh), 7rem);
     font-weight: inherit;
-  }
-  /* The brochure wordmark: blue letters in a thick white sticker outline */
-  .hero-lockup :global(.logo-word) {
-    color: var(--poster-blue);
-    -webkit-text-stroke: 0.16em #fff;
-    paint-order: stroke fill;
-    filter: drop-shadow(0 0.05em 0.06em rgb(0 0 0 / 0.55));
-  }
-  .hero-lockup :global(.logo-dash) {
-    color: inherit;
   }
   /* Sits at the far right of the band, over the flame, as on the brochure */
   .hero-tag {
